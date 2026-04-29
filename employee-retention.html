@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Retention Strategy | Case Study</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="logo">GM.</a>
+            <ul class="nav-links">
+                <li><a href="index.html#projects">Back to Portfolio</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero" style="min-height: 50vh; padding-top: 150px; align-items: flex-start;">
+        <div class="hero-content" style="text-align: left; max-width: 1200px;">
+            <div class="hero-text">
+                <h1 style="font-size: 3.5rem;">Employee <span class="highlight">Retention Strategy</span></h1>
+                <h2>Predictive Analytics for Talent Management</h2>
+                <p>Investigating drivers of attrition and deploying Machine Learning to identify high-risk employees before they leave.</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="case-study-container">
+        <aside class="case-sidebar">
+            <h4>Contents</h4>
+            <ul>
+                <li><a href="#executive-summary">Executive Summary</a></li>
+                <li><a href="#business-context">Business Context</a></li>
+                <li><a href="#key-findings">Key Findings & Insights</a></li>
+                <li><a href="#predictive-modelling">Predictive Modelling</a></li>
+                <li><a href="#recommendations">Strategic Recommendations</a></li>
+            </ul>
+        </aside>
+
+        <main class="case-content">
+            <section id="executive-summary">
+                <div class="metric-cards">
+                    <div class="metric-card">
+                        <h3>24%</h3>
+                        <p>Overall Turnover</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>97%</h3>
+                        <p>Model Accuracy</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>22</h3>
+                        <p>High-Risk Flags</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="business-context">
+                <h2><i class="fa-solid fa-briefcase highlight"></i> Business Context</h2>
+                <p><strong>The Ask:</strong> "Investigate how the client can improve retention of its high performing employees and predict exactly which employees are most at risk of leaving."</p>
+                <p>Losing top talent is a massive cost to any organization. The objective of this engagement was to use historical HR data (15,000 employees) to understand why high performers leave and build an early-warning system to prevent it.</p>
+                <div class="callout-box">
+                    <p>"On average, the turnover rate for high performers was 7 percentage points higher than the overall average."</p>
+                </div>
+            </section>
+
+            <section id="key-findings">
+                <h2><i class="fa-solid fa-chart-line highlight"></i> Key Findings & Insights</h2>
+                <p>Exploratory Data Analysis (EDA) revealed significant departmental disparities: HR and Accounting had the highest turnover (>31%), while R&D showed strong retention.</p>
+                
+                <ul>
+                    <li><strong>Satisfaction & Workload:</strong> High-performing leavers experienced 40% less satisfaction than their peers who stayed. They were carrying 1.4x more projects and had spent 35% more time in the company.</li>
+                    <li><strong>Overtime Burnout:</strong> Top talent that left were working 26% more monthly hours.</li>
+                    <li><strong>Lack of Recognition:</strong> Upward mobility was stagnant. Nearly 96% of the retained top performers had not received a promotion in the last 5 years.</li>
+                </ul>
+                
+                <img src="assets/images/retention_plot_2.png" alt="Correlation Plot" class="plot-img">
+            </section>
+
+            <section id="predictive-modelling">
+                <h2><i class="fa-solid fa-microchip highlight"></i> Predictive Modelling</h2>
+                <p>Due to the non-linear nature of employee behavior, linear models like Logistic Regression underperformed. A suite of algorithms was tested using <code>RepeatedStratifiedKFold</code> cross-validation.</p>
+                <p><strong>XGBoost</strong> emerged as the clear winner, achieving over 97% accuracy in identifying flight risks.</p>
+
+                <div class="code-container">
+                    <pre><code class="language-python">
+# Hyperparameter tuning for XGBoost to detect flight risk
+clf_xgb = XGBClassifier(objective='binary:logistic')
+param_dist = {
+    'n_estimators': sp_randint(20, 100),
+    'learning_rate': sp_randfloat(0.01, 0.59),
+    'max_depth': [3, 4, 5],
+    'min_child_weight': [1, 2, 3, 4]
+}
+
+clf = RandomizedSearchCV(clf_xgb, param_distributions=param_dist, cv=cv, 
+                         n_iter=5, scoring='roc_auc', n_jobs=-1)
+clf.fit(X_train, y_train)
+                    </code></pre>
+                </div>
+                
+                <div class="callout-box">
+                    <p>The model successfully flagged 22 employees with over 70% probability to leave in the near future. Critical intervention was recommended for the 10 identified high-performers.</p>
+                </div>
+                
+                <img src="assets/images/retention_plot_10.png" alt="Feature Importance Plot" class="plot-img">
+            </section>
+
+            <section id="recommendations">
+                <h2><i class="fa-solid fa-lightbulb highlight"></i> Strategic Recommendations</h2>
+                <p>Based on the data, the client should shift from reactive hiring to proactive talent management:</p>
+                <ul>
+                    <li><strong>Reward Heavy Lifters:</strong> Introduce bonuses, extra PTO, or formal recognitions specifically targeting high performers working overtime or leading multiple projects.</li>
+                    <li><strong>Performance-Based Compensation:</strong> Conduct periodic, data-driven salary reviews. The data showed medium/low salary bands were highly susceptible to attrition.</li>
+                    <li><strong>Cross-Departmental Learning:</strong> Investigate and replicate the successful retention strategies utilized by the R&D department across HR and Accounting.</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Built with ❤️ using the Hands-on-Data repository.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

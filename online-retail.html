@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Retail Analysis | Case Study</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="logo">GM.</a>
+            <ul class="nav-links">
+                <li><a href="index.html#projects">Back to Portfolio</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero" style="min-height: 50vh; padding-top: 150px; align-items: flex-start;">
+        <div class="hero-content" style="text-align: left; max-width: 1200px;">
+            <div class="hero-text">
+                <h1 style="font-size: 3.5rem;">Online <span class="highlight">Retail Analysis</span></h1>
+                <h2>Customer Segmentation & Sales Optimization</h2>
+                <p>Generating actionable business intelligence from an e-commerce transactional database to drive targeted marketing campaigns.</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="case-study-container">
+        <aside class="case-sidebar">
+            <h4>Contents</h4>
+            <ul>
+                <li><a href="#executive-summary">Executive Summary</a></li>
+                <li><a href="#sales-performance">Sales Performance</a></li>
+                <li><a href="#customer-segmentation">Customer Segmentation</a></li>
+                <li><a href="#data-engineering">Data Engineering</a></li>
+                <li><a href="#recommendations">Recommendations</a></li>
+            </ul>
+        </aside>
+
+        <main class="case-content">
+            <section id="executive-summary">
+                <div class="metric-cards">
+                    <div class="metric-card">
+                        <h3>9.5%</h3>
+                        <p>Q3 Sales Growth</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>ATV</h3>
+                        <p>Increased All Year</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>B2B/B2C</h3>
+                        <p>Segment Split</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sales-performance">
+                <h2><i class="fa-solid fa-chart-line highlight"></i> Sales Performance</h2>
+                <p>The first phase of the analysis focused on macroeconomic trends within the business. While gross sales soared in Q3 2011 (9.5%), they experienced an unexpected drop of 4.5% during Q4.</p>
+                <div class="callout-box">
+                    <p>Despite the drop in gross sales in Q4, the Average Transaction Value (ATV) steadily increased every quarter throughout the year.</p>
+                </div>
+                <p><strong>Operational Insights:</strong> Q4 experienced the highest volume of transactions purely due to the Christmas rush. The data showed that peak purchasing hours occurred during the afternoon, while Mondays and Fridays were consistently the weakest days for hourly transactions. This presents an opportunity for targeted "Happy Hour" pricing to smooth out operational demand.</p>
+            </section>
+
+            <section id="customer-segmentation">
+                <h2><i class="fa-solid fa-users highlight"></i> Customer Segmentation</h2>
+                <p>Analysis of Unit Per Transaction (UPT) revealed highly skewed data, indicating a hidden mix of retail (B2C) and wholesale (B2B) customers within the same dataset. To build effective campaigns, the retail customer base was cleanly isolated and segmented based on Recency and Average Transaction Value (ATV).</p>
+                <ul>
+                    <li><strong>Low-value customers:</strong> High frequency, low spend.</li>
+                    <li><strong>High-value, low-recency:</strong> Loyal big-spenders currently active.</li>
+                    <li><strong>High-value, high-recency:</strong> Former big-spenders who are churning.</li>
+                </ul>
+            </section>
+
+            <section id="data-engineering">
+                <h2><i class="fa-solid fa-database highlight"></i> Data Engineering</h2>
+                <p>To enable the BI dashboards in Tableau, the raw data underwent extensive preparation in MS SQL Server. This included deduplication, handling missing customer IDs, filtering canceled invoices, and creating analytical aggregate tables.</p>
+
+                <div class="code-container">
+                    <pre><code class="language-sql">
+-- CUSTOMER REPORT CTE FOR CAMPAIGN SEGMENTATION
+WITH rpt_cus AS (
+    SELECT  CUSTOMERID,
+            RECENCY_MONTHS,
+            COUNTRY,
+            COUNT(INVOICE) AS NUMBER_INVOICES,
+            AVG(Invoice_amount) AS AVG_INVOICEAMOUNT,
+            SUM(Invoice_amount) AS TOTAL_SALESAMOUNT
+    FROM (
+        SELECT  CUSTOMERID, RECENCY_MONTHS, COUNTRY, INVOICE,
+                SUM(amount) AS INVOICE_AMOUNT
+        FROM [online_retail_2]
+        WHERE REG_CUSTOMER = 1
+        GROUP BY CUSTOMERID, RECENCY_MONTHS, COUNTRY, INVOICE
+    ) i
+    GROUP BY CUSTOMERID, RECENCY_MONTHS, COUNTRY
+)
+SELECT * INTO online_retail_customer FROM rpt_cus;
+                    </code></pre>
+                </div>
+            </section>
+
+            <section id="recommendations">
+                <h2><i class="fa-solid fa-lightbulb highlight"></i> Strategic Recommendations</h2>
+                <p>The segmentation model directly informed the following marketing strategies:</p>
+                <ul>
+                    <li><strong>Drive Volume for Low-Value Segments:</strong> Increase purchase frequency by offering next-purchase discounts. Promote upselling at checkout to systematically boost their ATV.</li>
+                    <li><strong>Reward High-Value Loyalty:</strong> Offer VIP perks to active big-spenders such as one-day delivery, early access to sales, and preferential customer service.</li>
+                    <li><strong>Win-Back Campaigns:</strong> For the high-value churning segment, deploy highly aggressive retention offers (e.g., steep product-specific discounts) and initiate surveys to understand the root cause of their churn.</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Built with ❤️ using the Hands-on-Data repository.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
