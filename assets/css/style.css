@@ -451,6 +451,15 @@ ul {
         width: 250px;
         height: 250px;
     }
+
+    .case-title {
+        font-size: 2.5rem !important;
+        line-height: 1.1;
+    }
+
+    .hero-content {
+        padding: 0 20px;
+    }
 }
 
 /* Consulting Case Study Layout */
@@ -590,10 +599,36 @@ ul {
 @media (max-width: 900px) {
     .case-study-container {
         flex-direction: column;
+        padding: 1.5rem 15px;
     }
     .case-sidebar {
         position: static;
         width: 100%;
         margin-bottom: 2rem;
+        padding: 1.5rem;
+    }
+    .case-content section {
+        margin-bottom: 2.5rem;
+    }
+    .case-content h2 {
+        font-size: 1.6rem;
+    }
+    .metric-card h3 {
+        font-size: 2rem;
+    }
+    .case-content ul {
+        padding-left: 1rem;
     }
 }
+
+/* Ensure no horizontal overflow */
+body {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+img, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
+}
+
