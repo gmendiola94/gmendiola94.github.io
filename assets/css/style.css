@@ -110,6 +110,15 @@ ul {
     gap: 30px;
 }
 
+.nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--clr-olive);
+}
+
 .nav-links a {
     font-weight: 500;
     font-size: 1rem;
@@ -230,7 +239,7 @@ ul {
 
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
     gap: 40px;
 }
 
@@ -311,7 +320,7 @@ ul {
 
 .badges-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
     gap: 30px;
 }
 
@@ -437,10 +446,30 @@ ul {
     
     .hero-cta {
         justify-content: center;
+        flex-wrap: wrap;
     }
     
+    .nav-toggle {
+        display: block;
+    }
+
     .nav-links {
         display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: var(--bg-main);
+        flex-direction: column;
+        padding: 20px;
+        gap: 20px;
+        border-bottom: 1px solid var(--border-light);
+        text-align: center;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .nav-links.active {
+        display: flex;
     }
     
     .hero-text h1 {
@@ -453,12 +482,39 @@ ul {
     }
 
     .case-title {
-        font-size: 2.5rem !important;
+        font-size: 1.8rem !important;
         line-height: 1.1;
     }
 
-    .hero-content {
-        padding: 0 20px;
+    .hero-text h2 {
+        font-size: 1.2rem !important;
+    }
+
+    .hero-text p {
+        font-size: 1rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-text h1 {
+        font-size: 2.2rem;
+    }
+
+    .hero-text h2 {
+        font-size: 1.5rem;
+    }
+
+    .section {
+        padding: 60px 5%;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
     }
 }
 
@@ -511,6 +567,7 @@ ul {
 
 .case-content {
     flex: 1;
+    min-width: 0; /* Prevents flex items from overflowing container */
 }
 
 .case-content section {
@@ -518,8 +575,8 @@ ul {
 }
 
 .case-content h2 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    margin-bottom: 1.2rem;
     color: var(--text-primary);
     border-bottom: 2px solid var(--clr-sand);
     padding-bottom: 0.5rem;
@@ -583,9 +640,12 @@ ul {
 
 .plot-img {
     width: 100%;
+    max-width: 100%;
+    height: auto;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     margin: 2rem 0;
+    display: block;
 }
 
 .code-container {
@@ -594,6 +654,7 @@ ul {
     padding: 1rem;
     margin: 2rem 0;
     overflow-x: auto;
+    max-width: 100%;
 }
 
 @media (max-width: 900px) {
@@ -632,3 +693,185 @@ img, video, canvas, svg {
     height: auto;
 }
 
+/* Carousel Styles */
+.deck-viewer {
+    margin: 3rem 0;
+    background: var(--bg-card);
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    max-width: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.deck-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.deck-title-area p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0 0 5px 0;
+    font-weight: 500;
+}
+
+.deck-title-area h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+}
+
+.deck-actions .btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.deck-main {
+    position: relative;
+    background: #0f172a;
+    border-radius: 1.5rem;
+    padding: 10px;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+    overflow: hidden;
+    width: 100%;
+}
+
+.deck-slide-img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 1rem;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    display: none;
+}
+
+.deck-slide-img.active {
+    opacity: 1;
+    display: block;
+}
+
+.deck-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.deck-nav-btn:hover {
+    background: white;
+    transform: translateY(-50%) scale(1.05);
+}
+
+.deck-prev { left: 15px; }
+.deck-next { right: 15px; }
+
+.deck-thumbnails {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scrollbar-width: thin;
+}
+
+.deck-thumb {
+    flex: 0 0 140px;
+    background: var(--bg-card);
+    border: 2px solid var(--border-light);
+    border-radius: 12px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.deck-thumb:hover {
+    background: white;
+    border-color: var(--clr-sand);
+}
+
+.deck-thumb.active {
+    background: white;
+    border-color: var(--text-primary);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.deck-thumb-img-wrapper {
+    aspect-ratio: 16/9;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    background: #f1f5f9;
+}
+
+.deck-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.deck-thumb-text {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .deck-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .deck-nav-btn {
+        width: 32px;
+        height: 32px;
+    }
+    .deck-viewer {
+        padding: 10px;
+        margin: 1.5rem 0;
+        width: calc(100vw - 30px) !important;
+        max-width: 100% !important;
+    }
+    .deck-main {
+        padding: 5px;
+        border-radius: 1rem;
+        width: 100% !important;
+        height: auto !important;
+    }
+    .deck-thumb {
+        flex: 0 0 100px;
+        padding: 5px;
+    }
+    .deck-title-area h3 {
+        font-size: 1.1rem;
+    }
+    .metric-card h3 {
+        font-size: 1.5rem;
+    }
+    .case-content h2 {
+        font-size: 1.4rem;
+    }
+}
