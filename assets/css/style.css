@@ -100,8 +100,14 @@ ul {
 }
 
 .logo {
-    font-size: 1.5rem;
-    font-weight: 800;
+    font-size: 1.4rem;
+    font-weight: 200;
+    font-style: italic;
+
+    /* -- add handwritten modern aesthetic fonts from google fonts -- */
+    font-family: 'Alegreya', serif;
+    
+
     color: var(--clr-olive);
 }
 
