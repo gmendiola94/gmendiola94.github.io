@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Retention Strategy | Case Study</title>
+    <link rel="icon" href="assets/images/favicon/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
@@ -79,17 +80,17 @@
                     <li><strong>Lack of Recognition:</strong> Upward mobility was stagnant. Nearly 96% of the retained top performers had not received a promotion in the last 5 years.</li>
                 </ul>
                 
-                <img src="assets/images/retention_plot_2.png" alt="Correlation Plot" class="plot-img">
-            </section>
+                </section>
 
             <section id="predictive-modelling">
                 <h2><i class="fa-solid fa-microchip highlight"></i> Predictive Modelling</h2>
                 <p>Due to the non-linear nature of employee behaviour, linear models like Logistic Regression underperformed. A suite of algorithms was tested using <code>RepeatedStratifiedKFold</code> cross-validation.</p>
                 <p><strong>XGBoost</strong> emerged as the clear winner, achieving over 97% accuracy in identifying flight risks.</p>
-
+                <img src="assets/images/retention_plot_1.png" alt="Algorithm Comparison" class="plot-img">
+                <h3><i class="fa-solid fa-microchip highlight"></i> Hyperparameter tuning for XGBoost </h3>
                 <div class="code-container">
                     <pre><code class="language-python">
-# Hyperparameter tuning for XGBoost to detect flight risk
+# Hyperparameter tuning for XGBoost 
 clf_xgb = XGBClassifier(objective='binary:logistic')
 param_dist = {
     'n_estimators': sp_randint(20, 100),
@@ -103,7 +104,8 @@ clf = RandomizedSearchCV(clf_xgb, param_distributions=param_dist, cv=cv,
 clf.fit(X_train, y_train)
                     </code></pre>
                 </div>
-                
+                <h3><i class="fa-solid fa-microchip highlight"></i> Influential Variables</h3>
+                <img src="assets/images/retention_plot_4.png" alt="Influential Variables" class="plot-img">
                 <div class="callout-box">
                     <p>The model successfully flagged 22 employees with over 70% probability to leave in the near future. Critical intervention was recommended for the 10 identified high-performers.</p>
                 </div>
@@ -231,7 +233,7 @@ clf.fit(X_train, y_train)
 
     <footer class="footer">
         <div class="footer-content">
-            <p>Created by Gianmarco Mendiola.</p>
+            <p>© 2026 Gianmarco Mendiola. All rights reserved.</p>
         </div>
     </footer>
 

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Online Retail Analysis | Case Study</title>
+    <link rel="icon" href="assets/images/favicon/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
@@ -77,15 +78,9 @@
                     <li><strong>High-value, low-recency:</strong> Loyal big-spenders currently active.</li>
                     <li><strong>High-value, high-recency:</strong> Former big-spenders who are churning.</li>
                 </ul>
-            </section>
-
-            <section id="data-engineering">
-                <h2><i class="fa-solid fa-database highlight"></i> Data Engineering</h2>
-                <p>To enable the BI dashboards in Tableau, the raw data underwent extensive preparation in MS SQL Server. This included deduplication, handling missing customer IDs, filtering canceled invoices, and creating analytical aggregate tables.</p>
-
+                <h3><i class="fa-solid fa-users highlight"></i> Aggregated Data for Customer Segmentation </h3>  
                 <div class="code-container">
                     <pre><code class="language-sql">
--- CUSTOMER REPORT CTE FOR CAMPAIGN SEGMENTATION
 WITH rpt_cus AS (
     SELECT  CUSTOMERID,
             RECENCY_MONTHS,
@@ -107,6 +102,110 @@ SELECT * INTO online_retail_customer FROM rpt_cus;
                 </div>
             </section>
 
+            <section id="data-engineering">
+                <h2><i class="fa-solid fa-database highlight"></i> Data Engineering</h2>
+                <p>To enable the BI dashboards in Tableau, the raw data underwent validation and preparation in MS SQL Server. This included deduplication, handling missing customer IDs, filtering canceled invoices, and creating analytical aggregate tables.</p>
+                <h3><i class="fa-solid fa-database highlight"></i> Data Preparation Code Sample</h3>  
+                <div class="code-container">
+                    <pre><code class="language-sql">
+WITH UNIQUE_DESCRIPTIONS AS
+(
+	SELECT  STOCKCODE
+	       ,DESCRIPTION
+	       ,SUM_QUANTITY
+	       ,ROW_NUMBER() OVER ( PARTITION BY STOCKCODE ORDER BY SUM_QUANTITY DESC) RANKING
+	FROM
+	(
+		SELECT  UPPER(STOCKCODE)AS STOCKCODE
+		       ,DESCRIPTION
+		       ,SUM(CAST(QUANTITY AS INTEGER)) SUM_QUANTITY
+		FROM [online_retail_non_dup]
+		WHERE LEN(INVOICE) = 6
+		AND CAST(PRICE AS FLOAT) > 0
+		AND CAST(QUANTITY AS FLOAT) > 0
+		AND UPPER(STOCKCODE) not like '%TEST%'
+		AND RTRIM(LTRIM(STOCKCODE)) <> 'ADJUST'
+		AND LEN(STOCKCODE) IN (5, 6, 7, 8)
+		AND COUNTRY <> 'Unspecified'
+		GROUP BY  UPPER(STOCKCODE)
+		         ,DESCRIPTION
+	)S
+)
+SELECT  INVOICE
+       ,UPPER(A.STOCKCODE)STOCKCODE
+       ,B.DESCRIPTION
+       ,CAST(QUANTITY                                AS INTEGER) QUANTITY
+       ,CAST(PRICE                                   AS FLOAT) PRICE
+       ,CAST(INVOICEDATE                             AS DATE) INVOICEDATE
+       ,CAST(PRICE AS FLOAT)*CAST(QUANTITY           AS INTEGER) AMOUNT
+       ,DATEPART(YEAR,CAST(INVOICEDATE               AS DATETIME)) YEARDATE
+       ,DATEPART(MONTH,CAST(INVOICEDATE              AS DATETIME)) MONTHYEAR
+       ,DATEPART(HOUR,CAST(INVOICEDATE               AS DATETIME)) HOURDAY
+       ,DATENAME(WEEKDAY,CAST(INVOICEDATE            AS DATETIME)) DAYWEEK
+       ,CAST(CAST("CUSTOMER ID" AS FLOAT)AS INTEGER) AS CUSTOMERID
+       ,DATEDIFF(mm,(
+                SELECT  MAX(CAST(INVOICEDATE AS DATE))
+                FROM [online_retail_non_dup] MD
+                WHERE MD."CUSTOMER ID" = A."CUSTOMER ID" ) , CAST('2011-12-09' AS DATE)) RECENCY_MONTHS 
+        ,CASE WHEN country = 'RSA' THEN 'South Africa' WHEN country = 'EIRE' THEN 'Ireland' else country end AS  COUNTRY
+        ,CASE WHEN LEN("CUSTOMER ID") = 0 THEN 0 ELSE 1 END REG_CUSTOMER 
+INTO [online_retail_2]
+FROM [online_retail_non_dup] A
+JOIN UNIQUE_DESCRIPTIONS B
+ON UPPER(A.STOCKCODE) = UPPER(B.STOCKCODE) AND RANKING = 1
+WHERE LEN(INVOICE) = 6
+    AND CAST(PRICE AS FLOAT) > 0
+    AND CAST(QUANTITY AS FLOAT) > 0
+    AND UPPER(A.STOCKCODE) not like '%TEST%'
+    AND RTRIM(LTRIM(A.STOCKCODE)) <> 'ADJUST'
+    AND LEN(A.STOCKCODE) IN (5, 6, 7, 8)
+    AND COUNTRY <> 'Unspecified'; 
+                    </code></pre>
+                </div>
+                <h3><i class="fa-solid fa-database highlight"></i> Data Profiling Code Sample</h3> 
+                <div class="code-container">
+                    <pre><code class="language-sql">
+SELECT  *
+FROM
+(
+	SELECT  LEN(STOCKCODE) AS STOCKLENGTH
+	       ,STOCKCODE
+	       ,DESCRIPTION
+	       ,PRICE
+	       ,ROW_NUMBER() OVER (PARTITION BY LEN(STOCKCODE) ORDER BY STOCKCODE ) AS ORDEN
+	FROM [online_retail_2]
+) y
+WHERE y.orden < 5;
+
+SELECT  COUNTRY
+       ,MAX(PRICE) AS MAXP
+       ,MAX(QUANTITY) AS MAXQ
+       ,MIN(PRICE) AS MINP
+       ,MIN(QUANTITY) AS MINQ
+       ,SUM(AMOUNT)/COUNT(DISTINCT CUSTOMERID) AS SPENDING_PU
+       ,MAX(AMOUNT) AS MAXAMOUNT
+       ,COUNT(DISTINCT CUSTOMERID) CUSTOMERS
+FROM [online_retail_2]
+GROUP BY  COUNTRY
+ORDER BY COUNT(*) DESC;
+
+SELECT  COUNTRY
+       ,MAX(PRICE) AS MAXP
+       ,MAX(QUANTITY) AS MAXQ
+       ,MIN(PRICE) AS MINP
+       ,MIN(QUANTITY) AS MINQ
+       ,SUM(AMOUNT)/COUNT(DISTINCT CUSTOMERID) AS SPENDING_PU
+       ,MAX(AMOUNT)
+       ,COUNT(DISTINCT CUSTOMERID) CUSTOMERS
+FROM [online_retail_2]
+WHERE CUSTOMERID <> 0
+GROUP BY COUNTRY
+ORDER BY SUM(AMOUNT)/COUNT(DISTINCT CUSTOMERID) DESC;
+
+                    </code></pre>
+                </div>
+            </section>
+            
             <section id="recommendations">
                 <h2><i class="fa-solid fa-lightbulb highlight"></i> Strategic Recommendations</h2>
                 <p>The segmentation model directly informed the following marketing strategies:</p>
@@ -239,7 +338,7 @@ SELECT * INTO online_retail_customer FROM rpt_cus;
 
     <footer class="footer">
         <div class="footer-content">
-            <p>Created by Gianmarco Mendiola.</p>
+            <p>© 2026 Gianmarco Mendiola. All rights reserved.</p>
         </div>
     </footer>
 
